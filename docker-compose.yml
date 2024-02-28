@@ -1,0 +1,11 @@
+version: '3'
+services:
+  query_api:
+    build:
+      context: ./
+      dockerfile: DockerFile
+    ports:
+      - 7005:7005
+    volumes:
+      - .:/app
+    restart: always

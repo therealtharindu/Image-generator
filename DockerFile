@@ -1,0 +1,16 @@
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the project files to the working directory
+COPY . /app
+
+COPY requirements.txt /app/requirements.txt
+
+RUN pip3 --no-cache-dir --use-deprecated=legacy-resolver install -r /Image-generator/requirements.txt
+
+# Expose the API port
+EXPOSE 7005
+
+# Set the entrypoint command to run the API server
+CMD ["uvicorn", "qna_api:app", "--host", "0.0.0.0", "--port", "7005", "--proxy-headers"]
