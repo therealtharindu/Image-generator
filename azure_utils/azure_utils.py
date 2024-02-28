@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from openai_utils.image_genarator import OpenaiUtils
 from PIL import Image
 import io
+from constants.constants import *
 
 load_dotenv()
 openai = OpenaiUtils()
@@ -11,7 +12,7 @@ openai = OpenaiUtils()
 class AzureUtils:
 
     def __init__(self) -> None:
-        self.storage_connection_string = os.environ.get("CONNECTION_STRING")
+        self.storage_connection_string = CONNECTION_STRING
         self.blob_service_client = BlobServiceClient.from_connection_string(self.storage_connection_string)
         self.container_name = "images"
         self.blob = "pizza.png"
