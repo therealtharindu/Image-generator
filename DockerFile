@@ -1,16 +1,19 @@
+FROM python:3.8
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the project files to the working directory
-COPY . /app
+# Copy the requirements file into the container at /app
+COPY requirements.txt /app/
 
-COPY requirements.txt requirements.txt
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip3 --no-cache-dir --use-deprecated=legacy-resolver install -r requirements.txt
+# Copy the current directory contents into the container at /app
+COPY . /app/
 
-# Expose the API port
+# Expose the port that the app will run on
 EXPOSE 7005
 
-# Set the entrypoint command to run the API server
-CMD ["uvicorn", "qna_api:app", "--host", "0.0.0.0", "--port", "7005", "--proxy-headers"]
+# Command to run the application
+CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "7005"]
