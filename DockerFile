@@ -5,9 +5,9 @@ WORKDIR /app
 # Copy the project files to the working directory
 COPY . /app
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements.txt requirements.txt
 
-RUN pip3 --no-cache-dir --use-deprecated=legacy-resolver install -r /Image-generator/requirements.txt
+RUN pip3 --no-cache-dir --use-deprecated=legacy-resolver install -r requirements.txt
 
 # Expose the API port
 EXPOSE 7005
