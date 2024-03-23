@@ -5,7 +5,11 @@ import json
 from PIL import Image
 import requests
 from constants.constants import *
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from prompts.prompts import Prompts
+
 load_dotenv()
+system_message = Prompts()
 
 class OpenaiUtils:
     def __init__(self) -> None:
@@ -20,11 +24,13 @@ class OpenaiUtils:
     def generate_image(self, description):
 
         # print(payload)
+        prompt = system_message.system_message(description)
+        
 
         try:
             result = self.client.images.generate(
                         model=os.environ.get("MODEL"),
-                        prompt=description,
+                        prompt=prompt,
                         n=1
                         )
         
@@ -36,27 +42,26 @@ class OpenaiUtils:
 
             return generated_image
 
-            # print(json_response)
-
-            # # Set the directory for the stored image
-            # image_dir = os.path.join(os.curdir, 'images')
-
-            # # If the directory doesn't exist, create it
-            # if not os.path.isdir(image_dir):
-            #     os.mkdir(image_dir)
-
-            # # Initialize the image path (note the filetype should be png)
-            # image_path = os.path.join(image_dir, 'generated_image.png')
-
-            # # Retrieve the generated image
-            # image_url = json_response["data"][0]["url"]  # extract image URL from response
-            # generated_image = requests.get(image_url).content  # download the image
-            # with open(image_path, "wb") as image_file:
-            #     image_file.write(generated_image)
-
-            # # Display the image in the default image viewer
-            # image = Image.open(image_path)
-            # image.show()
 
         except Exception as e:
             print(e)
+        
+    # def generate_image(self, description):
+    #     try:
+    #         result = self.client.images.generate(
+    #                     model=os.environ.get("MODEL"),
+    #                     prompt=description,
+    #                     n=1
+    #                     )
+        
+    #         json_response = json.loads(result.model_dump_json())
+    #         image_url = json_response["data"][0]["url"]  # extract image URL from response
+    #         return image_url
+
+
+    #     except Exception as e:
+    #         print(e) 
+
+
+# ai = OpenaiUtils()
+# ai.generate_image("A picture of a pizza")

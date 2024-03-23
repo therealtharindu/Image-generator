@@ -5,6 +5,7 @@ from openai_utils.image_genarator import OpenaiUtils
 from PIL import Image
 import io
 from constants.constants import *
+import requests
 
 load_dotenv()
 openai = OpenaiUtils()
@@ -15,9 +16,21 @@ class AzureUtils:
         self.storage_connection_string = CONNECTION_STRING
         self.blob_service_client = BlobServiceClient.from_connection_string(self.storage_connection_string)
         self.container_name = "images"
-        self.blob = "pizza.png"
 
-    
+    # def upload_image(self, description):
+
+    #     image_url = openai.generate_image(description)
+    #     generated_image = requests.get(image_url).content
+
+
+    #     # Create a blob client using the local file name as the name for the blob
+    #     blob_service_client = BlobServiceClient.from_connection_string(self.storage_connection_string)
+    #     blob_client = blob_service_client.get_blob_client(self.container_name, "images")
+
+    #     # Upload the created file
+    #     blob_client.upload_blob(generated_image)
+
+        
     def upload_image(self, description):
         try:
             generated_image = openai.generate_image(description)
@@ -37,6 +50,7 @@ class AzureUtils:
             
         except Exception as e:
             print(e)
+    
 
-# azure = AzureUtils()
-# azure.upload_image()
+azure = AzureUtils()
+azure.upload_image("chicken biriyani")
