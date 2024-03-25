@@ -30,12 +30,21 @@ class Image(BaseModel):
     img_name: str
 
 
+class Sas(BaseModel):
+    user_id: str
+    img_name: str
+
 @app.post("/generate_image")
 async def train(image: Image):
     img_url = azure.upload_image(image.description, image.user_id, image.img_name)
 
     return {"Img_url": img_url}
 
+@app.post("/get_image")
+async def get_image_url(sas: Sas):
+    img_url = azure.get_image_url(sas.user_id, sas.img_name)
+
+    return {"Img_url_SAS": img_url}
 
 
 if __name__ == "__main__":

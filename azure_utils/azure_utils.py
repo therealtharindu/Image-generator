@@ -1,4 +1,4 @@
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 import os
 from dotenv import load_dotenv
 from openai_utils.image_genarator import OpenaiUtils
@@ -6,6 +6,8 @@ from PIL import Image
 import io
 from constants.constants import *
 import requests
+from datetime import datetime, timedelta
+
 
 load_dotenv()
 openai = OpenaiUtils()
@@ -48,3 +50,25 @@ class AzureUtils:
             print("Error uploading image to Azure Blob Storage: ", e)
 
         
+    def get_image_url(self, user_id, img_name):
+        container_name = user_id
+        blob_name = f"{img_name}.jpg"
+
+        # Get the blob client
+        blob_client = self.blob_service_client.get_blob_client(container_name, blob_name)
+
+        # Create a SAS token to use to authenticate a BlobServiceClient
+        sas_token = generate_blob_sas(
+            self.blob_service_client.account_name,
+            container_name,
+            blob_name,
+            account_key=self.blob_service_client.credential.account_key,
+            permission=BlobSasPermissions(read=True),
+            expiry=datetime.utcnow() + timedelta(days=365*100)  # Token valid for 100 years
+
+        )
+
+        # Create a full URL with the SAS token
+        blob_url_with_sas = f"{blob_client.url}?{sas_token}"
+
+        return blob_url_with_sas
