@@ -15,42 +15,36 @@ class AzureUtils:
     def __init__(self) -> None:
         self.storage_connection_string = CONNECTION_STRING
         self.blob_service_client = BlobServiceClient.from_connection_string(self.storage_connection_string)
-        self.container_name = "images"
-
-    # def upload_image(self, description):
-
-    #     image_url = openai.generate_image(description)
-    #     generated_image = requests.get(image_url).content
 
 
-    #     # Create a blob client using the local file name as the name for the blob
-    #     blob_service_client = BlobServiceClient.from_connection_string(self.storage_connection_string)
-    #     blob_client = blob_service_client.get_blob_client(self.container_name, "images")
-
-    #     # Upload the created file
-    #     blob_client.upload_blob(generated_image)
-
-        
-    def upload_image(self, description):
+    def upload_image(self, description, user_id, img_name):
         try:
-            generated_image = openai.generate_image(description)
-
-            # Optionally display the image (comment this if not needed)
+            blob_name = f"{img_name}.jpg"
+            container_name = user_id
+            image_url = openai.generate_image(description)
+            generated_image = requests.get(image_url).content
             image = Image.open(io.BytesIO(generated_image))
             image.show()
-            # Upload the image data directly to blob storage
-            with self.blob_service_client.get_blob_client(container=self.container_name, blob=self.blob) as blob_client:
-                blob_client.upload_blob(generated_image, overwrite=True)
 
-            # Print the blob URL
-            blob_url = f"https://{self.blob_service_client.account_name}.blob.core.windows.net/{self.container_name}/{self.blob}"
-            print(f"Image has been uploaded to: {blob_url}")
+            # Check if the container exists and create it if it doesn't
+            container_client = self.blob_service_client.get_container_client(container_name)
+            if not container_client.exists():
+                self.blob_service_client.create_container(container_name)
+
+
+            # Create a blob client using the local file name as the name for the blob
+            blob_client = self.blob_service_client.get_blob_client(container_name, blob_name)
+
+            # Upload the created file
+            blob_client.upload_blob(generated_image, overwrite=True)
+            print("Image has been uploaded successfully.")
+
+            blob_url = f"https://{self.blob_service_client.account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+            print(blob_url)
 
             return blob_url
-            
-        except Exception as e:
-            print(e)
-    
 
-azure = AzureUtils()
-azure.upload_image("chicken biriyani")
+        except Exception as e:
+            print("Error uploading image to Azure Blob Storage: ", e)
+
+        

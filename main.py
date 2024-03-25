@@ -26,11 +26,13 @@ app.add_middleware(
 
 class Image(BaseModel):
     description: str
+    user_id: str
+    img_name: str
 
 
 @app.post("/generate_image")
 async def train(image: Image):
-    img_url = azure.upload_image(image.description)
+    img_url = azure.upload_image(image.description, image.user_id, image.img_name)
 
     return {"Img_url": img_url}
 
