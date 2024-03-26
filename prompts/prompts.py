@@ -8,4 +8,3 @@ class Prompts:
         
         return system_message_content
                             
-                            
